@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const sequelize = require("../../config/database");
+const sequelize = require("../../../config/database");
 
 const {
   HTTP_STATUS,
@@ -8,7 +8,7 @@ const {
   successResponse,
 } = require("../../helpers/httpStatus");
 
-class UserController {
+class UsersController {
   async create(req, res) {
     const transaction = await sequelize.transaction(); // Start a transaction
     try {
@@ -140,4 +140,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController(); // Export using CommonJS syntax
+module.exports = new UsersController(); // Export using CommonJS syntax

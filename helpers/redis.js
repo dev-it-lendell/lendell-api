@@ -9,7 +9,7 @@ const addConn = async (name) => {
   const client = createClient();
   await client.connect();
   __conns[name] = client;
-  console.log("Connected.");
+  console.log("Redis Connected.");
 
   // TO DO: RECONNECT ON CONNECTION ERROR
   // UNTESTED CODE

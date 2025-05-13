@@ -72,6 +72,12 @@ const objEmpty = (obj) => {
   return Object.keys(obj).length === 0;
 };
 
+const queryToStr = (query, removeQuestionMark = false) => {
+  return `${removeQuestionMark ? "" : "?"}${Object.entries(query)
+    .map((entry) => `${entry[0]}=${entry[1]}`)
+    .join("&")}`;
+};
+
 const isStr = (arg) => {
   return typeof arg === "string";
 };
@@ -853,4 +859,5 @@ module.exports = {
   match,
   maskName,
   formatAmount,
+  queryToStr,
 };

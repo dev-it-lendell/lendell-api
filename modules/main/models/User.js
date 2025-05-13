@@ -1,23 +1,38 @@
 const { Model } = require("sequelize");
-const sequelize = require("../../config/database");
-const utils = require("../../helpers/utils");
+const sequelize = require("../../../config/database");
+const utils = require("../../../helpers/utils");
 
-class Supplier extends Model {
+class User extends Model {
+  static ROLE_NAMES = {
+    1: "ADMIN",
+    2: "STANDARD USER",
+  };
+
   static async select(condition = {}) {
     try {
       let query = `SELECT
         id,
-        code,
-        name,
-        description,
-        address,
+        username,
+        password,
+        lastName,
+        firstName,
+        middleName,
+        suffix,
+        CONCAT(
+              TRIM(lastName), ', ',    
+              TRIM(firstName),      
+              IF(middleName != '', CONCAT(' ', TRIM(middleName)), ''),
+              IF(suffix != '', CONCAT(' ', TRIM(suffix)), '') 
+        ) AS name,
+        role,
         active,
+        initialLogin,
         createdBy,
         updatedBy,
         createdAt,
         updatedAt,
         remarks
-      FROM suppliers
+      FROM users
       `; // Raw SQL query
 
       const replacements = {};
@@ -40,13 +55,10 @@ class Supplier extends Model {
       });
 
       for (const list of data) {
-        list.createdAt = utils.formatDate({
-          date: list.createdAt,
-        });
-        list.updatedAt = utils.formatDate({
-          date: list.updatedAt,
-        });
+        list.role = this.ROLE_NAMES[list.role];
         list.status = list.active === 1 ? "ACTIVE" : "INACTIVE";
+        list.createdAt = utils.formatDate({ date: list.createdAt });
+        list.updatedAt = utils.formatDate({ date: list.updatedAt });
       }
 
       return data;
@@ -58,12 +70,23 @@ class Supplier extends Model {
 
   static async insert(data, transaction) {
     try {
+      // Check if the username already exists
+      const checkQuery = `SELECT * FROM users WHERE username = :username`;
+      const [existingUser] = await sequelize.query(checkQuery, {
+        replacements: { username: data.username },
+        type: sequelize.QueryTypes.SELECT,
+      });
+
+      if (existingUser) {
+        throw new Error(`Username '${data.username}' already exists.`);
+      }
+
       const fields = Object.keys(data).join(", ");
       const values = Object.keys(data)
         .map((key) => `:${key}`)
         .join(", ");
 
-      const query = `INSERT INTO suppliers (${fields}) VALUES (${values})`;
+      const query = `INSERT INTO users (${fields}) VALUES (${values})`;
 
       const result = await sequelize.query(query, {
         replacements: data,
@@ -74,7 +97,7 @@ class Supplier extends Model {
       const insertedId = result[0]; // First element contains the inserted primary key (if available)
 
       // If `id` is available, use it; otherwise, use a unique field from `data`
-      const selectQuery = `SELECT * FROM suppliers WHERE id = :id`;
+      const selectQuery = `SELECT * FROM users WHERE id = :id`;
       const [insertedRow] = await sequelize.query(selectQuery, {
         replacements: { id: insertedId },
         type: sequelize.QueryTypes.SELECT,
@@ -105,15 +128,17 @@ class Supplier extends Model {
         .map((key) => `${key} = :${key}`)
         .join(" AND ");
 
-      const query = `UPDATE suppliers SET ${setClause} WHERE ${whereClause}`;
+      const query = `UPDATE 
+        users SET ${setClause} 
+      WHERE ${whereClause}`;
 
-      const result = await sequelize.query(query, {
+      await sequelize.query(query, {
         replacements: { ...data, ...condition },
         type: sequelize.QueryTypes.UPDATE,
         transaction,
       });
 
-      const selectQuery = `SELECT * FROM suppliers WHERE ${whereClause}`;
+      const selectQuery = `SELECT * FROM users WHERE ${whereClause}`;
       const [updatedRows] = await sequelize.query(selectQuery, {
         replacements: { ...condition },
         type: sequelize.QueryTypes.SELECT,
@@ -128,4 +153,4 @@ class Supplier extends Model {
   }
 }
 
-module.exports = Supplier;
+module.exports = User;

@@ -7,7 +7,8 @@ const {
   HTTP_STATUS,
   errorResponse,
   successResponse,
-} = require("../../helpers/httpStatus");
+} = require("../../../helpers/httpStatus");
+
 class AuthController {
   async login(req, res) {
     const { username, password } = req.body;
@@ -43,6 +44,14 @@ class AuthController {
       await redisClient.connect();
       await redisClient.set(user[0].username, userToken);
 
+      res.cookie("access_token", userToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "dev" ? false : true,
+        sameSite: "Strict",
+        // maxAge: 10 * 1000, // 10 seconds
+        maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
+      });
+
       successResponse(
         res,
         HTTP_STATUS.OK,
@@ -66,6 +75,13 @@ class AuthController {
     const redisClient = createClient();
     await redisClient.connect();
     await redisClient.sendCommand(["DEL", req.user.username]);
+
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "dev" ? false : true,
+      sameSite: "Strict",
+    });
+
     successResponse(
       res,
       HTTP_STATUS.OK,

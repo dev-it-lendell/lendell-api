@@ -30,7 +30,12 @@ const verifyAccessToken = (token, ignoreExpiration) => {
 };
 
 const validateAccessToken = (req, res, next) => {
-  const token = extractTokenFromRequest(req);
+  let token = extractTokenFromRequest(req);
+
+  if (Object.keys(req.cookies).length > 0) {
+    token = req.cookies.access_token;
+  }
+
   const user = verifyAccessToken(token, true);
   if (!token || !user) {
     errorResponse(
@@ -76,7 +81,6 @@ const checkWhiteList = async (req, res, next) => {
     .toUpperCase()
     .startsWith(`${appCode}CLIENT_`);
 
-  // Do not check the whitelist if user is from a third party app (ie HIMS, NURSE STATION, etc.)
   if (userFromThirdPartyApp) {
     next();
     return;

@@ -25,6 +25,7 @@ const successResponse = (res, statusCode, message, data = null) => {
   return res.status(statusCode).json({
     status: "success",
     message,
+    count: data.length,
     data,
   });
 };
