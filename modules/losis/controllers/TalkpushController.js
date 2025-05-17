@@ -26,14 +26,18 @@ class TalkpushController {
       );
     }
 
-    const { status } = req.query;
+    const { status, application_id } = req.query;
 
     const payload = {
       "filter[status_selected]": status,
       "filter[others][msa]": "24091 - Block Inc - 980005835",
-      "filter[others][job_requisition_primary_location]":
-        "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
+      // "filter[others][job_requisition_primary_location]":
+      //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
     };
+
+    if (!utils.empty(application_id)) {
+      Object.assign(payload, { "filter[query]": `AP${application_id}$` });
+    }
 
     const queryStr = utils.queryToStr(payload, true);
 

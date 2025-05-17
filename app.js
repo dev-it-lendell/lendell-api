@@ -4,7 +4,7 @@ const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const redis = require("./helpers/redis.js");
+// const redis = require("./helpers/redis.js");
 
 const cookieParser = require("cookie-parser");
 
@@ -52,7 +52,7 @@ const PORT =
     next();
   });
 
-  await redis.addConn();
+  // await redis.addConn();
 
   // Routes
 

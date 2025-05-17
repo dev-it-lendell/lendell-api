@@ -2,7 +2,7 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 
 router.get("/", (req, res) => {
-  res.json({ message: "Welcome to Lendell API" });
+  res.json({ message: "Welcome to Lendell API V1" });
 });
 
 router.use("/auth", require("./main/routes/authRoutes"));
