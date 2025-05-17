@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-const axios = require("axios");
-
 const utils = require("../../../helpers/utils");
 
 const {
