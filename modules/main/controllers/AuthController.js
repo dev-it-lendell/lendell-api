@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { createClient } = require("redis");
+// const { createClient } = require("redis");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");

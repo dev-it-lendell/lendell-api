@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const redis = require("./redis.js");
+// const redis = require("./redis.js");
 const {
   HTTP_STATUS,
   errorResponse,
