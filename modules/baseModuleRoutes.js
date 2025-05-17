@@ -5,18 +5,9 @@ router.get("/", (req, res) => {
   res.json({ message: "Welcome to Lendell API V1" });
 });
 
-router.use("/auth", require("./main/routes/authRoutes"));
+// router.use("/auth", require("./main/routes/authRoutes"));
 router.use("/losis", require("./losis/routes/baseRoutes"));
 router.use("/lomis", require("./lomis/routes/baseRoutes"));
-// router.use("/users", require("./userRoutes"));
-// router.use("/departments", require("./departmentRoutes"));
-// router.use("/suppliers", require("./supplierRoutes"));
-// router.use("/equipments", require("./equipmentRoutes"));
-// router.use("/work-orders", require("./workOrderRoutes"));
-
-// router.put("/:id", validateAccessToken, checkWhiteList, (req, res) =>
-//   DepartmentController.update(req, res)
-// );
 
 // const users = [{ id: 1, username: "admin", password: "admin123" }];
 
