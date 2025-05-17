@@ -1,13 +1,20 @@
+require("dotenv").config();
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 
-router.get("/", (req, res) => {
+router.get(`/${process.env.BASE_URL}`, (req, res) => {
   res.json({ message: "Welcome to Lendell API V1" });
 });
 
 // router.use("/auth", require("./main/routes/authRoutes"));
-router.use("/losis", require("./losis/routes/baseRoutes"));
-router.use("/lomis", require("./lomis/routes/baseRoutes"));
+router.use(
+  `/${process.env.BASE_URL}/losis`,
+  require("./losis/routes/baseRoutes")
+);
+router.use(
+  `/${process.env.BASE_URL}/lomis`,
+  require("./lomis/routes/baseRoutes")
+);
 
 // const users = [{ id: 1, username: "admin", password: "admin123" }];
 

@@ -1,3 +1,6 @@
+const fs = require("fs");
+const logStream = fs.createWriteStream("./logs/app.log", { flags: "a" });
+
 function getIp(remoteAddress) {
   let ip = remoteAddress.split(":");
   ip = ip[ip.length - 1];
@@ -791,6 +794,12 @@ const formatAmount = (amount) => {
   });
 };
 
+const logMessage = (message) => {
+  const timestamp = new Date().toISOString();
+  logStream.write(`[${timestamp}] ${message}\n`);
+  console.log(message); // Also still log to stdout just in case
+};
+
 module.exports = {
   getIp,
   randomString,
@@ -851,6 +860,7 @@ module.exports = {
   addEllipsis,
   pwFromBirthDate,
   log,
+  logMessage,
   convertTime12to24,
   sliceObj,
   objContains,

@@ -4,9 +4,12 @@ const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const utils = require("./helpers/utils.js");
 // const redis = require("./helpers/redis.js");
 
 const cookieParser = require("cookie-parser");
+
+utils.logMessage("App starting...");
 
 const app = express();
 const PORT =
@@ -25,6 +28,7 @@ const PORT =
         callback(null, true); // Allow access in development mode
       } else {
         console.log("Not allowed by CORS:", origin);
+        log("Not allowed by CORS:", origin);
         callback(new Error("Not allowed by CORS")); // Block access
       }
     },
@@ -59,6 +63,7 @@ const PORT =
   app.use(require("./modules/baseModuleRoutes.js"));
 
   app.listen(PORT, () => {
+    utils.logMessage(`Server running on http://localhost:${PORT}`);
     console.log(`Server running on http://localhost:${PORT}`);
   });
 })();
