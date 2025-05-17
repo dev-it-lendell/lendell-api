@@ -25,7 +25,7 @@ class Inquiry extends Model {
           date_updated,
           remarks
       FROM
-          lendellp_lomis.tbl_inquiries`; // Raw SQL query
+          lendellp_lomis_dev.tbl_inquiries`; // Raw SQL query
 
       const replacements = {};
 
