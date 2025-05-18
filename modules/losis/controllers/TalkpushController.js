@@ -37,21 +37,44 @@ class TalkpushController {
       Object.assign(payload, { "filter[query]": `AP${application_id}$` });
     }
 
-    const queryStr = utils.queryToStr(payload, true);
+    const candidates = await this.getCandidatesFromTalkPush(payload);
 
-    await fetch(
+    const allCandidates = [];
+    if (candidates.total > 0) {
+      allCandidates.push(...candidates.candidates);
+      const totalPages = candidates.pages;
+
+      // Only loop if there are more than 1 page
+      for (let page = 2; page <= totalPages; page++) {
+        Object.assign(payload, { page: page });
+        const nextPagesData = await this.getCandidatesFromTalkPush(payload);
+        // const data = await res.json();
+        allCandidates.push(...nextPagesData.candidates);
+      }
+    }
+
+    if (allCandidates.length > 0) {
+      // INSERT DATA TO DB
+    }
+
+    successResponse(
+      res,
+      HTTP_STATUS.OK,
+      "Talkpush Candidate Data",
+      allCandidates,
+      true
+    );
+  }
+
+  async getCandidatesFromTalkPush(payload) {
+    const queryStr = utils.queryToStr(payload, true);
+    return await fetch(
       `${process.env.TALKPUSH_CONCENTRIX_API_URL}campaign_invitations?api_key=${process.env.TALKPUSH_API_KEY}&${queryStr}`,
       requestOptions
     )
       .then((response) => response.text())
       .then((result) => {
-        successResponse(
-          res,
-          HTTP_STATUS.OK,
-          "Talkpush Candidate Data",
-          JSON.parse(result),
-          true
-        );
+        return JSON.parse(result);
       })
       .catch((error) => {
         console.log(error);
