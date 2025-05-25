@@ -1,45 +1,45 @@
 const utils = require("./utils");
+const sequelize = require("../config/database");
 
-const generateUniqueId = async (
-  prefix,
+const generateUniqueCode = async (
   tableName,
-  dateColumn,
-  transaction,
-  sequelize
+  prefix,
+  surrogateCode = "code",
+  max = 10000000,
+  min = 99999999,
+  transaction
 ) => {
-  const randomNumbers = Math.floor(100000 + Math.random() * 900); // 6-digit random number
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  let code = "";
+  let codeExists = true;
 
-  try {
-    // Raw SQL query to count rows for the current day
-    const query = `
-      SELECT COUNT(*) AS count
-      FROM ${tableName}
-      WHERE DATE(${dateColumn}) = :today
-    `;
-    const replacements = { today }; // Safe parameter binding
+  const randomNumbers = Math.floor(Math.random() * (max - min + 1)) + min; // 8-digit random number
 
-    const data = await sequelize.query(query, {
-      replacements,
-      type: sequelize.QueryTypes.SELECT,
-      transaction,
-    });
+  while (codeExists) {
+    code = `${prefix}-${randomNumbers}`;
+    try {
+      const query = `
+      SELECT COUNT(${surrogateCode}) AS count
+        FROM ${tableName}
+        WHERE ${surrogateCode} = :code
+      `;
+      const replacements = { code }; // Safe parameter binding
 
-    const currentCount = data[0].count || 0; // Get the count of rows for today
+      const data = await sequelize.query(query, {
+        replacements,
+        type: sequelize.QueryTypes.SELECT,
+        transaction,
+      });
 
-    // Incremental value for today
-    const incremental = (currentCount + 1).toString().padStart(3, "0"); // Pad to 3 digits
-    // Construct the unique ID
-    return `${prefix}${today.replace(
-      /\-/g,
-      ""
-    )}${randomNumbers}-${incremental}`;
-  } catch (err) {
-    console.error("Error generating unique ID:", err);
-    throw new Error("Failed to generate unique ID");
+      const codeCount = data;
+      codeExists = Boolean(codeCount.count);
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: error };
+    }
   }
+  return code;
 };
 
 module.exports = {
-  generateUniqueId,
+  generateUniqueCode,
 };

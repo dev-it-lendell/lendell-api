@@ -5,5 +5,7 @@ router.get("/", (req, res) => {
 });
 
 router.use("/talkpush", require("./talkpushRoutes"));
+router.use("/candidates", require("./candidatesRoutes"));
+router.use("/clients", require("./clientsRoutes"));
 
 module.exports = router;
