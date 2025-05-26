@@ -73,7 +73,7 @@ class CandidatesController {
             mname: list.mname,
             lname: list.lname,
             suffix: list.suffix,
-            birthdate: list.birthdate,
+            birthdate: utils.formatDate({ date: list.birthdate, straightDate: true }),
             endo_id: await sql.generateUniqueCode(
               "lendellp_losis_test.tbl_endo",
               `LOSI-0${utils.pad(currentMonth)}`,
@@ -84,11 +84,11 @@ class CandidatesController {
             ),
             endo_desc: list.endo_desc,
             endo_code: endoCode,
-            endo_date: list.endo_date,
+            endo_date: utils.formatDate({ date: list.endo_date, straightDate: true }),
             endo_status: "0",
             folder_name: endoCode,
             client_id: list.client_id,
-            endorsed_to: list.endorsed_to,
+            endorsed_to: list.endorsed_to, // Supervisor
             turn_around_date: list.turn_around_date,
             endo_services: list.endo_services,
             endo_requestor: list.endo_requestor,
@@ -101,14 +101,15 @@ class CandidatesController {
             external_client_id: list.external_client_id,
           };
 
+
           let endorsedToPayload = {
             endo_code: endoCode,
-            endorsed_by: "",
-            endorsed_to: "",
+            endorsed_by: list.client_id,
+            endorsed_to: list.team_id,
           };
 
           let endorsementBIProcessPayload = {
-            assigned_supervisor: "",
+            assigned_supervisor: "", // Supervisor
             percentage_: "15",
             endo_code: endoCode,
             datetime_added: utils.currentDateTime(),
@@ -118,8 +119,8 @@ class CandidatesController {
             client_id: list.client_id,
             endo_code: endoCode,
             endo_action: "Create New Endorsement",
-            assigned_poc: "",
-            assigned_team: "",
+            assigned_poc: "", // Supervisor
+            assigned_team: list.team_id , // TEAM
             datetime_added: utils.currentDateTime(),
           };
 

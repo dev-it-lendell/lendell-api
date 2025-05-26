@@ -1,8 +1,4 @@
 ALTER TABLE `lendellp_losis_test`.`tbl_endo` 
-ADD COLUMN `external_client_id` VARCHAR(45) NULL COMMENT 'For API Integration' AFTER `application_code`;
-
-
-ALTER TABLE `lendellp_losis_test`.`tbl_endo` 
 ADD COLUMN `external_client_id` VARCHAR(45) NULL DEFAULT NULL COMMENT 'For API Integration' AFTER `application_code`,
 ADD COLUMN `active` TINYINT(1) NULL DEFAULT 1 AFTER `external_client_id`,
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `active`,
@@ -29,3 +25,15 @@ INSERT INTO `lendellp_losis_test`.`tbl_candidate_status` (`code`, `name`, `descr
 INSERT INTO `lendellp_losis_test`.`tbl_candidate_status` (`code`, `name`, `description`) VALUES ('complete_pre_onboarding', 'Complete Pre-onboarding', 'Complete Pre-onboarding');
 INSERT INTO `lendellp_losis_test`.`tbl_candidate_status` (`code`, `name`, `description`) VALUES ('onboarded', 'Onboarded', 'Onboarded');
 INSERT INTO `lendellp_losis_test`.`tbl_candidate_status` (`code`, `name`, `description`) VALUES ('workday_onboarding', 'Workday Onboarding', 'Workday Onboarding');
+
+
+ALTER TABLE tbl_endo ADD INDEX client_id (client_id);
+ALTER TABLE tbl_endo ADD INDEX site_id (endo_code);
+ALTER TABLE tbl_endo ADD INDEX endorsed_to (endorsed_to);
+ALTER TABLE tbl_client ADD INDEX user_id (user_id);
+ALTER TABLE client_list ADD INDEX client_id (client_id);
+ALTER TABLE tbl_endorsement_bi_process ADD INDEX endo_code (endo_code);
+ALTER TABLE tbl_supervisor ADD INDEX user_id (user_id);
+
+ALTER TABLE `lendellp_losis_test`.`supervisor_list` 
+ADD COLUMN `user_id` VARCHAR(80) NULL AFTER `suffix`;

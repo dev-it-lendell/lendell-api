@@ -1,4 +1,5 @@
 const Client = require("../models/Client");
+const Supervisor = require("../models/Supervisor");
 const utils = require("../../../helpers/utils");
 
 const {
@@ -37,14 +38,50 @@ class ClientsController {
       successResponse(
         res,
         HTTP_STATUS.OK,
-        "Client fetched successfully",
+        "Client(s) fetched successfully",
         client
       );
     } catch (err) {
       errorResponse(
         res,
         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-        "Error fetching candidate status",
+        "Error fetching client(s)",
+        err.message
+      );
+    }
+  }
+
+  async selectSupervisor(req, res) {
+    try {
+      const customClauses = [];
+      const condition = {};
+
+      if (!utils.empty(req.query.supervisor_id)) {
+        customClauses.push({
+          sql: `supervisor_id = :supervisor_id`,
+          value: {
+            supervisor_id: req.query.supervisor_id,
+          },
+        });
+      }
+
+      const supervisor = await Supervisor.select(
+        condition,
+        customClauses,
+        ""
+      );
+
+      successResponse(
+        res,
+        HTTP_STATUS.OK,
+        "Supervisor(s) fetched successfully",
+        supervisor
+      );
+    } catch (err) {
+      errorResponse(
+        res,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Error fetching supervisor(s)",
         err.message
       );
     }

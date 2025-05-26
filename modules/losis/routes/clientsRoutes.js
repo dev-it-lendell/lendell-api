@@ -10,5 +10,6 @@ const {
 const router = express.Router();
 
 router.get("/", (req, res) => ClientsController.selectClient(req, res));
+router.get("/supervisor", (req, res) => ClientsController.selectSupervisor(req, res));
 
 module.exports = router;
