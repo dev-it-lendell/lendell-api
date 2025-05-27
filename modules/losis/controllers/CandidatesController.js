@@ -88,8 +88,8 @@ class CandidatesController {
             endo_status: "0",
             folder_name: endoCode,
             client_id: list.client_id,
-            endorsed_to: list.endorsed_to, // Supervisor
-            turn_around_date: list.turn_around_date,
+            endorsed_to: list.user_supervisor_id, // User Supervisor
+            turn_around_date:  list.turn_around_date === null ? null : utils.formatDate({ date: list.turn_around_date, straightDate: true }),
             endo_services: list.endo_services,
             endo_requestor: list.endo_requestor,
             site_id: list.site_id,
@@ -101,6 +101,7 @@ class CandidatesController {
             external_client_id: list.external_client_id,
           };
 
+          
 
           let endorsedToPayload = {
             endo_code: endoCode,
@@ -109,7 +110,7 @@ class CandidatesController {
           };
 
           let endorsementBIProcessPayload = {
-            assigned_supervisor: "", // Supervisor
+            assigned_supervisor: list.user_supervisor_id, // User Supervisor
             percentage_: "15",
             endo_code: endoCode,
             datetime_added: utils.currentDateTime(),
@@ -119,7 +120,7 @@ class CandidatesController {
             client_id: list.client_id,
             endo_code: endoCode,
             endo_action: "Create New Endorsement",
-            assigned_poc: "", // Supervisor
+            assigned_poc: list.user_supervisor_id, // User Supervisor
             assigned_team: list.team_id , // TEAM
             datetime_added: utils.currentDateTime(),
           };

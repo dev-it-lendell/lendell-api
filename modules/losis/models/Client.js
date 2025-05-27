@@ -14,7 +14,9 @@ class Client extends Model {
       let query = `SELECT 
           *
       FROM
-          lendellp_losis_test.tbl_client`; // Raw SQL query
+          tbl_client a
+              JOIN
+          client_list b ON b.client_id = a.site_id`; // Raw SQL query
 
       const replacements = {};
 
@@ -51,7 +53,6 @@ class Client extends Model {
         query += `LIMIT ${limit} `;
       }
 
-      console.log(query, replacements);
       // Execute the query
       const data = await sequelize.query(query, {
         replacements, // Safe parameter binding

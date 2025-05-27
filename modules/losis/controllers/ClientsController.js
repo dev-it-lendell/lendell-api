@@ -18,7 +18,7 @@ class ClientsController {
 
       if (!utils.empty(req.query.company_name)) {
         customClauses.push({
-          sql: `company_name like :company_name`,
+          sql: `a.company_name like :company_name`,
           value: {
             company_name: `%${req.query.company_name}%`,
           },
