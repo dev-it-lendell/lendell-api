@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 const sequelize = require("../../../config/database");
 const CandidatesController = require("../controllers/CandidatesController");
 
@@ -15,6 +17,10 @@ router.get("/status", (req, res) =>
 
 router.post("/endorsement", (req, res) =>
   CandidatesController.insertCandidatesEndorsement(req, res)
+);
+
+router.post("/send-report/:id", upload.single('files'), (req, res) =>
+  CandidatesController.sendFinalReport(req, res)
 );
 
 module.exports = router;

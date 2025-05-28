@@ -99,7 +99,7 @@ class TalkpushController {
         // );
 
         //  const endoCode = await sql.generateUniqueCode(
-        //     "lendellp_losis_test.tbl_endo",
+        //     "lendellp_losis_test_new.tbl_endo",
         //     `CNX-0${utils.pad(currentMonth)}`,
         //     "endo_code",
         //     10000000,
@@ -111,7 +111,7 @@ class TalkpushController {
           // for (const list of filterOne) {
           // const currentMonth = new Date().getMonth() + 1;
           // const endoCode = await sql.generateUniqueCode(
-          //   "lendellp_losis_test.tbl_endo",
+          //   "lendellp_losis_test_new.tbl_endo",
           //   `CNX-0${utils.pad(currentMonth)}`,
           //   "endo_code",
           //   10000000,
@@ -120,7 +120,7 @@ class TalkpushController {
           // );
 
           // const applicationCode = await sql.generateUniqueCode(
-          //   "lendellp_losis_test.tbl_endo",
+          //   "lendellp_losis_test_new.tbl_endo",
           //   `APPL-0${utils.pad(currentMonth)}`,
           //   "application_code",
           //   10000000,
@@ -144,7 +144,7 @@ class TalkpushController {
             suffix: "-",
             birthdate: list.others.date_of_birth,
             // endo_id: await sql.generateUniqueCode(
-            //   "lendellp_losis_test.tbl_endo",
+            //   "lendellp_losis_test_new.tbl_endo",
             //   `LOSI-0${utils.pad(currentMonth)}`,
             //   "endo_id",
             //   10000000,

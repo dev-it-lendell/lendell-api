@@ -1,6 +1,7 @@
 const sequelize = require("../../../config/database");
 const utils = require("../../../helpers/utils");
 const sql = require("../../../helpers/sql");
+const FormData = require("form-data");
 
 const CandidateStatus = require("../models/CandidateStatus");
 const EndorsedTo = require("../models/EndorsedTo");
@@ -51,7 +52,7 @@ class CandidatesController {
         for (const list of req.body) {
           const currentMonth = new Date().getMonth() + 1;
           const endoCode = await sql.generateUniqueCode(
-            "lendellp_losis_test.tbl_endo",
+            "lendellp_losis_test_new.tbl_endo",
             `CNX-0${utils.pad(currentMonth)}`,
             "endo_code",
             10000000,
@@ -60,7 +61,7 @@ class CandidatesController {
           );
 
           const applicationCode = await sql.generateUniqueCode(
-            "lendellp_losis_test.tbl_endo",
+            "lendellp_losis_test_new.tbl_endo",
             `APPL-0${utils.pad(currentMonth)}`,
             "application_code",
             10000000,
@@ -73,9 +74,12 @@ class CandidatesController {
             mname: list.mname,
             lname: list.lname,
             suffix: list.suffix,
-            birthdate: utils.formatDate({ date: list.birthdate, straightDate: true }),
+            birthdate: utils.formatDate({
+              date: list.birthdate,
+              straightDate: true,
+            }),
             endo_id: await sql.generateUniqueCode(
-              "lendellp_losis_test.tbl_endo",
+              "lendellp_losis_test_new.tbl_endo",
               `LOSI-0${utils.pad(currentMonth)}`,
               "endo_id",
               10000000,
@@ -84,12 +88,21 @@ class CandidatesController {
             ),
             endo_desc: list.endo_desc,
             endo_code: endoCode,
-            endo_date: utils.formatDate({ date: list.endo_date, straightDate: true }),
+            endo_date: utils.formatDate({
+              date: list.endo_date,
+              straightDate: true,
+            }),
             endo_status: "0",
             folder_name: endoCode,
             client_id: list.client_id,
             endorsed_to: list.user_supervisor_id, // User Supervisor
-            turn_around_date:  list.turn_around_date === null ? null : utils.formatDate({ date: list.turn_around_date, straightDate: true }),
+            turn_around_date:
+              list.turn_around_date === null
+                ? null
+                : utils.formatDate({
+                    date: list.turn_around_date,
+                    straightDate: true,
+                  }),
             endo_services: list.endo_services,
             endo_requestor: list.endo_requestor,
             site_id: list.site_id,
@@ -100,8 +113,6 @@ class CandidatesController {
             is_rerun: list.is_rerun,
             external_client_id: list.external_client_id,
           };
-
-          
 
           let endorsedToPayload = {
             endo_code: endoCode,
@@ -121,7 +132,7 @@ class CandidatesController {
             endo_code: endoCode,
             endo_action: "Create New Endorsement",
             assigned_poc: list.user_supervisor_id, // User Supervisor
-            assigned_team: list.team_id , // TEAM
+            assigned_team: list.team_id, // TEAM
             datetime_added: utils.currentDateTime(),
           };
 
@@ -170,6 +181,77 @@ class CandidatesController {
         res,
         HTTP_STATUS.INTERNAL_SERVER_ERROR,
         "Error creating Candidate endorsement",
+        err.message
+      );
+    }
+  }
+
+  async sendFinalReport(req, res) {
+    if (utils.empty(req.params.id) || req.params.id === "undefined") {
+      return errorResponse(
+        res,
+        HTTP_STATUS.BAD_REQUEST,
+        "Missing Parameter(s)",
+        {}
+      );
+    }
+
+    try {
+      const file = req.file;
+
+      if (!file) {
+        errorResponse(
+          res,
+          HTTP_STATUS.BAD_REQUEST,
+          "No file uploaded",
+          err.message
+        );
+      }
+
+      try {
+        const { invitationId } = req.params.id;
+        const apiKey = process.env.TALKPUSH_API_KEY;
+
+        if (!req.file)
+          return res.status(400).json({ error: "No file provided" });
+
+        const talkpushUrl = `https://concentrix-ph.talkpush.com/api/talkpush_services/campaign_invitations/${invitationId}/documents?api_key=${apiKey}`;
+
+        const formData = new FormData();
+        formData.append("file", req.file.buffer, {
+          filename: req.file.originalname,
+          contentType: req.file.mimetype,
+          knownLength: req.file.size,
+        });
+
+        const response = await fetch(talkpushUrl, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.text(); 
+        successResponse(
+          res,
+          HTTP_STATUS.CREATED,
+          "Candidate endorsement successfully sent",
+          result
+        );
+      } catch (error) {
+        console.log(error);
+        console.error("Error uploading to Talkpush:", error);
+        errorResponse(
+          res,
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          "Upload failed",
+          error
+        );
+      }
+    } catch (err) {
+      console.log(err);
+      errorResponse(
+        res,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Error sending Candidate endorsement",
         err.message
       );
     }
