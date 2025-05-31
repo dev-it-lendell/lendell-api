@@ -2,6 +2,7 @@ const sequelize = require("../../../config/database");
 const utils = require("../../../helpers/utils");
 const sql = require("../../../helpers/sql");
 const FormData = require("form-data");
+const axios = require("axios");
 
 const CandidateStatus = require("../models/CandidateStatus");
 const EndorsedTo = require("../models/EndorsedTo");
@@ -209,33 +210,46 @@ class CandidatesController {
       }
 
       try {
-        const { invitationId } = req.params.id;
+        const candidateId = req.params.id;
         const apiKey = process.env.TALKPUSH_API_KEY;
 
         if (!req.file)
           return res.status(400).json({ error: "No file provided" });
 
-        const talkpushUrl = `https://concentrix-ph.talkpush.com/api/talkpush_services/campaign_invitations/${invitationId}/documents?api_key=${apiKey}`;
+        let data = new FormData();
 
-        const formData = new FormData();
-        formData.append("file", req.file.buffer, {
+        data.append("file", req.file.buffer, {
           filename: req.file.originalname,
           contentType: req.file.mimetype,
           knownLength: req.file.size,
         });
+        data.append("document_tag_name", req.file.originalname);
 
-        const response = await fetch(talkpushUrl, {
-          method: "POST",
-          body: formData,
-        });
+        const talkpushUrl = `https://concentrix-ph.talkpush.com/api/talkpush_services/campaign_invitations/${candidateId}/documents?api_key=${apiKey}`;
 
-        const result = await response.text(); 
+        let config = {
+          method: "put",
+          maxBodyLength: Infinity,
+          url: talkpushUrl,
+          data: data,
+        };
+
+        const result = await axios
+          .request(config)
+          .then((response) => {
+            return JSON.stringify(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
         successResponse(
           res,
           HTTP_STATUS.CREATED,
           "Candidate endorsement successfully sent",
           result
         );
+        
       } catch (error) {
         console.log(error);
         console.error("Error uploading to Talkpush:", error);
