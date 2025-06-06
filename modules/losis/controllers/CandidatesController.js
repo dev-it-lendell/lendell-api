@@ -53,7 +53,7 @@ class CandidatesController {
         for (const list of req.body) {
           const currentMonth = new Date().getMonth() + 1;
           const endoCode = await sql.generateUniqueCode(
-            "lendellp_losis_test_new.tbl_endo",
+            "lendellp_losis_test.tbl_endo",
             `CNX-0${utils.pad(currentMonth)}`,
             "endo_code",
             10000000,
@@ -62,7 +62,7 @@ class CandidatesController {
           );
 
           const applicationCode = await sql.generateUniqueCode(
-            "lendellp_losis_test_new.tbl_endo",
+            "lendellp_losis_test.tbl_endo",
             `APPL-0${utils.pad(currentMonth)}`,
             "application_code",
             10000000,
@@ -80,7 +80,7 @@ class CandidatesController {
               straightDate: true,
             }),
             endo_id: await sql.generateUniqueCode(
-              "lendellp_losis_test_new.tbl_endo",
+              "lendellp_losis_test.tbl_endo",
               `LOSI-0${utils.pad(currentMonth)}`,
               "endo_id",
               10000000,
@@ -249,7 +249,6 @@ class CandidatesController {
           "Candidate endorsement successfully sent",
           result
         );
-        
       } catch (error) {
         console.log(error);
         console.error("Error uploading to Talkpush:", error);

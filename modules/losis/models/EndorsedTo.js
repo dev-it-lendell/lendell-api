@@ -13,7 +13,7 @@ class EndorsedTo extends Model {
       let query = `SELECT 
           *
       FROM
-          lendellp_losis_test_new.tbl_endorsed_to`; // Raw SQL query
+          lendellp_losis_test.tbl_endorsed_to`; // Raw SQL query
 
       const replacements = {};
 
@@ -70,7 +70,7 @@ class EndorsedTo extends Model {
         .map((key) => `:${key}`)
         .join(", ");
 
-      const query = `INSERT INTO lendellp_losis_test_new.tbl_endorsed_to (${fields}) VALUES (${values})`;
+      const query = `INSERT INTO lendellp_losis_test.tbl_endorsed_to (${fields}) VALUES (${values})`;
 
       const result = await sequelize.query(query, {
         replacements: data,
@@ -81,7 +81,7 @@ class EndorsedTo extends Model {
       const insertedId = result[0]; // First element contains the inserted primary key (if available)
 
       // If `id` is available, use it; otherwise, use a unique field from `data`
-      const selectQuery = `SELECT * FROM lendellp_losis_test_new.tbl_endorsed_to WHERE id = :id`;
+      const selectQuery = `SELECT * FROM lendellp_losis_test.tbl_endorsed_to WHERE id = :id`;
       const [insertedRow] = await sequelize.query(selectQuery, {
         replacements: { id: insertedId },
         type: sequelize.QueryTypes.SELECT,
@@ -112,7 +112,7 @@ class EndorsedTo extends Model {
         .map((key) => `${key} = :${key}`)
         .join(" AND ");
 
-      const query = `UPDATE lendellp_losis_test_new.tbl_endorsed_to SET ${setClause} WHERE ${whereClause}`;
+      const query = `UPDATE lendellp_losis_test.tbl_endorsed_to SET ${setClause} WHERE ${whereClause}`;
 
       const result = await sequelize.query(query, {
         replacements: { ...data, ...condition },
@@ -120,7 +120,7 @@ class EndorsedTo extends Model {
         transaction,
       });
 
-      const selectQuery = `SELECT * FROM lendellp_losis_test_new.tbl_endorsed_to WHERE ${whereClause}`;
+      const selectQuery = `SELECT * FROM lendellp_losis_test.tbl_endorsed_to WHERE ${whereClause}`;
       const [updatedRows] = await sequelize.query(selectQuery, {
         replacements: { ...condition },
         type: sequelize.QueryTypes.SELECT,

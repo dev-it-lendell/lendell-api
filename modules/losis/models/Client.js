@@ -14,9 +14,9 @@ class Client extends Model {
       let query = `SELECT 
           *
       FROM
-          tbl_client a
+          lendellp_losis_test.tbl_client a
               JOIN
-          client_list b ON b.client_id = a.site_id`; // Raw SQL query
+          lendellp_losis_test.client_list b ON b.client_id = a.site_id`; // Raw SQL query
 
       const replacements = {};
 

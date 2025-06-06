@@ -14,7 +14,7 @@ class CandidateStatus extends Model {
       let query = `SELECT 
           *
       FROM
-          lendellp_losis_test_new.tbl_candidate_status`; // Raw SQL query
+          lendellp_losis_test.tbl_candidate_status`; // Raw SQL query
 
       const replacements = {};
 
