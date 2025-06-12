@@ -38,7 +38,8 @@ class TalkpushController {
       const { status, application_id } = req.query;
 
       const payload = {
-        "filter[others][msa]": "24091 - Block Inc - 980005835",
+        // "filter[others][msa]": "24091 - Block Inc - 980005835",
+        "filter[others][job_requisition_id]": "R1562486"
         // "filter[others][job_requisition_primary_location]":
         //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
       };
@@ -267,13 +268,14 @@ class TalkpushController {
       const { status, application_id } = req.query;
 
       const payload = {
-        "filter[others][msa]": "24091 - Block Inc - 980005835",
+        "filter[others][bi_check]": "Lendell"
+        // "filter[others][msa]": "24091 - Block Inc - 980005835",
         // "filter[others][job_requisition_primary_location]":
         //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
       };
 
       if (!utils.empty(application_id)) {
-        Object.assign(payload, { "filter[query]": `AP${application_id}$` });
+        Object.assign(payload, { "filter[query]": `AP${application_id}` });
       }
 
       if (!utils.empty(status)) {
@@ -338,6 +340,7 @@ class TalkpushController {
             external_client_id: list.id,
             talkpush_status: list.state,
             folder: list.folder,
+            rawData: list
           };
 
           payloadToDisplay.push(endorsementPayload);

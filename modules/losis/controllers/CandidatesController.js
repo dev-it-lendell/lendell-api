@@ -217,13 +217,13 @@ class CandidatesController {
           return res.status(400).json({ error: "No file provided" });
 
         let data = new FormData();
-
+        
+        data.append("document_tag_name", req.body.document_tag_name);
         data.append("file", req.file.buffer, {
           filename: req.file.originalname,
           contentType: req.file.mimetype,
           knownLength: req.file.size,
         });
-        data.append("document_tag_name", req.file.originalname);
 
         const talkpushUrl = `https://concentrix-ph.talkpush.com/api/talkpush_services/campaign_invitations/${candidateId}/documents?api_key=${apiKey}`;
 
@@ -233,6 +233,7 @@ class CandidatesController {
           url: talkpushUrl,
           data: data,
         };
+
 
         const result = await axios
           .request(config)
