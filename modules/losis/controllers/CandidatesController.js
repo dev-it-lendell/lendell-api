@@ -141,6 +141,7 @@ class CandidatesController {
             external_client_id: list.external_client_id,
           });
 
+
           if (endorsement.length === 0) {
             endorsementPayload = await Endorsement.insert(
               endorsementPayload,
@@ -158,6 +159,8 @@ class CandidatesController {
               endorsementLogsPayload,
               transaction
             );
+            
+          console.log(endorsementPayload, endorsedToPayload)
             payloadToDisplay.push({
               endorsement: endorsementPayload,
               endorsedTo: endorsedToPayload,

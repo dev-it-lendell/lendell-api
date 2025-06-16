@@ -37,3 +37,19 @@ ALTER TABLE tbl_supervisor ADD INDEX user_id (user_id);
 
 ALTER TABLE `lendellp_losis_test`.`supervisor_list` 
 ADD COLUMN `user_id` VARCHAR(80) NULL AFTER `suffix`;
+
+
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000008' WHERE (`id` = '2');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000009' WHERE (`id` = '3');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000010' WHERE (`id` = '4');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000011' WHERE (`id` = '5');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000012' WHERE (`id` = '6');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000013' WHERE (`id` = '7');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000014' WHERE (`id` = '8');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000015' WHERE (`id` = '9');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000016' WHERE (`id` = '10');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000017' WHERE (`id` = '11');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000018' WHERE (`id` = '12');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000019' WHERE (`id` = '13');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000020' WHERE (`id` = '14');
+UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000114' WHERE (`id` = '18');

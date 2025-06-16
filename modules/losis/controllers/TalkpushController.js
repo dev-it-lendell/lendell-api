@@ -318,7 +318,7 @@ class TalkpushController {
             mname: list.others.middle_name ?? "",
             lname: list.last_name,
             suffix: "-",
-            birthdate: list.others.date_of_birth,
+            birthdate: list.others.date_of_birth ?? null,
             endo_desc: list.campaign_title,
             endo_date: list.created_at,
             endo_formatdate: utils.formatDate({
@@ -376,12 +376,13 @@ class TalkpushController {
       })
       .catch((error) => {
         console.log(error);
-        errorResponse(
-          res,
-          HTTP_STATUS.INTERNAL_SERVER_ERROR,
-          "Error retrieving data",
-          error
-        );
+        // errorResponse(
+        //   {},
+        //   HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        //   "Error retrieving data",
+        //   error
+        // );
+        return error
       });
   }
 
