@@ -55,9 +55,6 @@ class TalkpushController {
         Object.assign(payload, { "filter[query]": `AP${application_id}$` });
       }
 
-      // if (!utils.empty(status)) {
-      //   Object.assign(payload, { "filter[status_selected]": status });
-      // }
 
       const candidateStatus = await CandidateStatus.select(
         { active: 1 },
@@ -66,9 +63,7 @@ class TalkpushController {
         "",
         transaction
       );
-      // console.log(candidateStatus);
 
-      let candidates = [];
       const allCandidates = [];
       for (const list of candidateStatus) {
         payload["filter[status_selected]"] = list.code;
@@ -90,52 +85,14 @@ class TalkpushController {
         }
       }
 
-      // console.log(allCandidates);
-
       let payloadToDisplay = [];
       if (allCandidates.length > 0) {
-        // INSERT DATA TO DB
-        // const filterOne = allCandidates.filter(
-        //   (filterCandidate) => filterCandidate.id === 9967721
-        // );
-
-        //  const endoCode = await sql.generateUniqueCode(
-        //     "lendellp_losis_test.tbl_endo",
-        //     `CNX-0${utils.pad(currentMonth)}`,
-        //     "endo_code",
-        //     10000000,
-        //     99999999,
-        //     transaction
-        //   );
 
         for (const list of allCandidates) {
-          // for (const list of filterOne) {
-          // const currentMonth = new Date().getMonth() + 1;
-          // const endoCode = await sql.generateUniqueCode(
-          //   "lendellp_losis_test.tbl_endo",
-          //   `CNX-0${utils.pad(currentMonth)}`,
-          //   "endo_code",
-          //   10000000,
-          //   99999999,
-          //   transaction
-          // );
-
-          // const applicationCode = await sql.generateUniqueCode(
-          //   "lendellp_losis_test.tbl_endo",
-          //   `APPL-0${utils.pad(currentMonth)}`,
-          //   "application_code",
-          //   10000000,
-          //   99999999,
-          //   transaction
-          // );
 
           const clientId = "";
           const siteId = "";
-          // const clientId = "LOSIS-000049";
-          // const siteId = "LOSI-CL-000002";
-
           let endorsementPayload = {
-            // bi_id: 12314121, // GENERATION?
             full_name: `${list.last_name}, ${list.first_name} ${
               list.others.middle_name ?? ""
             }`,
@@ -144,19 +101,9 @@ class TalkpushController {
             lname: list.last_name,
             suffix: "-",
             birthdate: list.others.date_of_birth,
-            // endo_id: await sql.generateUniqueCode(
-            //   "lendellp_losis_test.tbl_endo",
-            //   `LOSI-0${utils.pad(currentMonth)}`,
-            //   "endo_id",
-            //   10000000,
-            //   99999999,
-            //   transaction
-            // ),
-            endo_desc: list.campaign_title,
-            // endo_code: endoCode,
+            endo_desc: list.others.job_requisition_id,
             endo_date: list.created_at,
             endo_status: "0",
-            // folder_name: endoCode,
             client_id: clientId,
             endorsed_to: "",
             turn_around_date: list.completed_at,
@@ -166,7 +113,6 @@ class TalkpushController {
             importance: "1",
             account: "",
             package_desc: "Standard",
-            // application_code: applicationCode,
             is_rerun: "0",
             active: 0,
             external_client_id: list.id,
@@ -174,67 +120,8 @@ class TalkpushController {
             folder: list.folder,
           };
 
-          // let endorsedToPayload = {
-          //   endo_code: endoCode,
-          //   endorsed_by: "",
-          //   endorsed_to: "",
-          // };
-
-          // let endorsementBIProcessPayload = {
-          //   assigned_supervisor: "",
-          //   percentage_: "15",
-          //   endo_code: endoCode,
-          //   datetime_added: utils.currentDateTime(),
-          // };
-
-          // let endorsementLogsPayload = {
-          //   client_id: clientId,
-          //   endo_code: endoCode,
-          //   endo_action: "Create New Endorsement",
-          //   assigned_poc: "",
-          //   assigned_team: "",
-          //   datetime_added: utils.currentDateTime(),
-          // };
-
-          // const endorsement = await Endorsement.select({
-          //   external_client_id: list.id,
-          // });
-          // const endorsedTo = await EndorsedTo.select({ endo_code: endoCode });
-          // const endorsementBIProcess = await EndorsementBIProcess.select({
-          //   endo_code: endoCode,
-          // });
-          // const endorsementLog = await EndorsementLog.select({
-          //   endo_code: endoCode,
-          // });
-
-          // if (endorsement.length === 0) {
-          // endorsementPayload = await Endorsement.insert(
-          //   endorsementPayload,
-          //   transaction
-          // );
-          // endorsedToPayload = await EndorsedTo.insert(
-          //   endorsedToPayload,
-          //   transaction
-          // );
-          // endorsementBIProcessPayload = await EndorsementBIProcess.insert(
-          //   endorsementBIProcessPayload,
-          //   transaction
-          // );
-          // endorsementLogsPayload = await EndorsementLog.insert(
-          //   endorsementLogsPayload,
-          //   transaction
-          // );
-          // payloadToDisplay.push({
-          //   endorsement: endorsementPayload,
-          //   endorsedTo: endorsedToPayload,
-          //   endorsementBIProcess: endorsementBIProcessPayload,
-          //   endorsementLogs: endorsementLogsPayload,
-          // });
-          // }
-
           payloadToDisplay.push(endorsementPayload);
 
-          // console.log(payloadEndorsement);
         }
       }
 
@@ -319,19 +206,17 @@ class TalkpushController {
             lname: list.last_name,
             suffix: "-",
             birthdate: list.others.date_of_birth ?? null,
-            endo_desc: list.campaign_title,
+            endo_desc: list.others.job_requisition_id,
             endo_date: list.created_at,
             endo_formatdate: utils.formatDate({
               date: list.created_at,
               withDayName: true,
             }),
             endo_status: "0",
-            // client_id: clientId,
             endorsed_to: "",
             turn_around_date: list.completed_at,
             endo_services: "BI",
             endo_requestor: list.others.bi_peme_poc ?? "",
-            // site_id: siteId,
             importance: "1",
             account: "",
             package_desc: "Standard",
