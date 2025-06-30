@@ -53,3 +53,27 @@ UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000018' WH
 UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000019' WHERE (`id` = '13');
 UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000020' WHERE (`id` = '14');
 UPDATE `lendellp_losis_test`.`supervisor_list` SET `user_id` = 'LOSIS-000114' WHERE (`id` = '18');
+
+
+CREATE TABLE `lendellp_losis_test`.`tbl_endo_api_data` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `endo_code` VARCHAR(255) NULL,
+  `raw_data` TEXT NULL,
+  `provider` VARCHAR(45) NULL,
+  `datetime_created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `datetime_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `remarks` VARCHAR(150) NULL,
+  PRIMARY KEY (`id`));
+
+
+CREATE TABLE `lendellp_losis_test`.`tbl_endo_external_files` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `endo_code` VARCHAR(255) NULL DEFAULT NULL,
+  `name` VARCHAR(200) NULL,
+  `type` VARCHAR(100) NULL,
+  `content_type` VARCHAR(150) NULL DEFAULT NULL,
+  `content_url` TEXT NULL DEFAULT NULL,
+  `datetime_created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
+  `datetime_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `remarks` VARCHAR(150) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`));

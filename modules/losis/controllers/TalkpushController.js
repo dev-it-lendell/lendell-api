@@ -155,7 +155,9 @@ class TalkpushController {
       const { status, application_id } = req.query;
 
       const payload = {
-        "filter[others][bi_check]": "Lendell"
+        "filter[others][bi_check]": "Lendell",
+        "include_documents": true,
+        "include_attachments": true
         // "filter[others][msa]": "24091 - Block Inc - 980005835",
         // "filter[others][job_requisition_primary_location]":
         //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
@@ -197,6 +199,15 @@ class TalkpushController {
             continue;
           }
 
+          const documents = list.documents
+          const attachments = list.attachments
+
+          delete list.documents
+          delete list.attachments
+          delete list.photo
+          delete list.others['gdpr_opt-in']
+          delete list.others.yes
+
           let endorsementPayload = {
             full_name: `${list.last_name}, ${list.first_name} ${
               list.others.middle_name ?? ""
@@ -225,7 +236,9 @@ class TalkpushController {
             external_client_id: list.id,
             talkpush_status: list.state,
             folder: list.folder,
-            rawData: list
+            rawData: JSON.stringify(list),
+            attachments: attachments,
+            documents: documents
           };
 
           payloadToDisplay.push(endorsementPayload);

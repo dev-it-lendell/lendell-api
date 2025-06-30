@@ -15,6 +15,8 @@ const {
   errorResponse,
   successResponse,
 } = require("../../../helpers/httpStatus");
+const EndorsementAPIData = require("../models/EndorsementAPIData");
+const EndorsementExternalFiles = require("../models/EndorsementExternalFiles");
 
 class CandidatesController {
   async selectCandidateStatus(req, res) {
@@ -137,10 +139,15 @@ class CandidatesController {
             datetime_added: utils.currentDateTime(),
           };
 
+          let endorsementAPIDataPayload = {
+            endo_code: endoCode,
+            raw_data: list.rawData,
+            provider: "TalkPush - Concentrix",
+          };
+
           const endorsement = await Endorsement.select({
             external_client_id: list.external_client_id,
           });
-
 
           if (endorsement.length === 0) {
             endorsementPayload = await Endorsement.insert(
@@ -159,8 +166,69 @@ class CandidatesController {
               endorsementLogsPayload,
               transaction
             );
-            
-          console.log(endorsementPayload, endorsedToPayload)
+
+            endorsementAPIDataPayload = await EndorsementAPIData.insert(
+              endorsementAPIDataPayload,
+              transaction
+            );
+
+            const filesWithUrls = [];
+
+            // console.log(list);
+            // Attachment and Documents //
+
+            if (list.documents.length > 0) {
+              if (Array.isArray(list.documents)) {
+                list.documents.forEach((doc) => {
+                  if (Array.isArray(doc.files)) {
+                    doc.files.forEach((file) => {
+                      if (file.url && file.name) {
+                        const fileType = file.name.slice(-3).toLowerCase();
+                        filesWithUrls.push({
+                          tag: doc.tag,
+                          name: file.name,
+                          type: "document",
+                          content_url: file.url,
+                          content_type: fileType,
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            }
+
+            // Extract from attachments (if any)
+            if (list.attachments.length > 0) {
+              if (Array.isArray(list.attachments)) {
+                list.attachments.forEach((att) => {
+                  if (att.url && att.name) {
+                    const fileType = att.name.slice(-3).toLowerCase();
+                    filesWithUrls.push({
+                      tag: att.tag || "Attachment",
+                      name: att.name,
+                      type: "attachment",
+                      content_url: att.url,
+                      content_type: fileType,
+                    });
+                  }
+                });
+              }
+            }
+
+            // console.log(list.attachments, list.documents);
+            console.log(filesWithUrls);
+
+            if (filesWithUrls.length > 0) {
+              for (const file of filesWithUrls) {
+                Object.assign(file, { endo_code: endoCode });
+                await EndorsementExternalFiles.insert(file, transaction);
+              }
+            }
+
+            // Attachment and Documents //
+
+            // console.log(endorsementPayload, endorsedToPayload)
             payloadToDisplay.push({
               endorsement: endorsementPayload,
               endorsedTo: endorsedToPayload,
@@ -220,7 +288,7 @@ class CandidatesController {
           return res.status(400).json({ error: "No file provided" });
 
         let data = new FormData();
-        
+
         data.append("document_tag_name", req.body.document_tag_name);
         data.append("file", req.file.buffer, {
           filename: req.file.originalname,
@@ -236,7 +304,6 @@ class CandidatesController {
           url: talkpushUrl,
           data: data,
         };
-
 
         const result = await axios
           .request(config)
