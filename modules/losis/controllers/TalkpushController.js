@@ -39,7 +39,7 @@ class TalkpushController {
 
       const payload = {
         // "filter[others][msa]": "24091 - Block Inc - 980005835",
-        "filter[others][job_requisition_id]": "R1562486"
+        "filter[others][job_requisition_id]": "R1562486",
         // "filter[others][job_requisition_primary_location]":
         //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
       };
@@ -54,7 +54,6 @@ class TalkpushController {
       if (!utils.empty(application_id)) {
         Object.assign(payload, { "filter[query]": `AP${application_id}$` });
       }
-
 
       const candidateStatus = await CandidateStatus.select(
         { active: 1 },
@@ -87,9 +86,7 @@ class TalkpushController {
 
       let payloadToDisplay = [];
       if (allCandidates.length > 0) {
-
         for (const list of allCandidates) {
-
           const clientId = "";
           const siteId = "";
           let endorsementPayload = {
@@ -121,7 +118,6 @@ class TalkpushController {
           };
 
           payloadToDisplay.push(endorsementPayload);
-
         }
       }
 
@@ -156,8 +152,8 @@ class TalkpushController {
 
       const payload = {
         "filter[others][bi_check]": "Lendell",
-        "include_documents": true,
-        "include_attachments": true
+        include_documents: true,
+        include_attachments: true,
         // "filter[others][msa]": "24091 - Block Inc - 980005835",
         // "filter[others][job_requisition_primary_location]":
         //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
@@ -199,14 +195,61 @@ class TalkpushController {
             continue;
           }
 
-          const documents = list.documents
-          const attachments = list.attachments
+          const documents = list.documents;
+          const attachments = list.attachments;
 
-          delete list.documents
-          delete list.attachments
-          delete list.photo
-          delete list.others['gdpr_opt-in']
-          delete list.others.yes
+          
+          const filesWithUrls = [];
+
+          // console.log(list);
+          // Attachment and Documents //
+
+          if (list.documents.length > 0) {
+            if (Array.isArray(list.documents)) {
+              list.documents.forEach((doc) => {
+                if (Array.isArray(doc.files)) {
+                  doc.files.forEach((file) => {
+                    if (file.url && file.name) {
+                      const fileType = file.name.slice(-3).toLowerCase();
+                      filesWithUrls.push({
+                        tag: doc.tag,
+                        name: file.name,
+                        type: "document",
+                        content_url: file.url,
+                        content_type: fileType,
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          }
+
+          // Extract from attachments (if any)
+          if (list.attachments.length > 0) {
+            if (Array.isArray(list.attachments)) {
+              list.attachments.forEach((att) => {
+                if (att.url && att.name) {
+                  const fileType = att.name.slice(-3).toLowerCase();
+                  filesWithUrls.push({
+                    tag: att.tag || "Attachment",
+                    name: att.name,
+                    type: "attachment",
+                    content_url: att.url,
+                    content_type: fileType,
+                  });
+                }
+              });
+            }
+          }
+
+          delete list.documents;
+          delete list.attachments;
+          delete list.photo;
+          delete list.others["gdpr_opt-in"];
+          delete list.others.yes;
+
+
 
           let endorsementPayload = {
             full_name: `${list.last_name}, ${list.first_name} ${
@@ -238,7 +281,9 @@ class TalkpushController {
             folder: list.folder,
             rawData: JSON.stringify(list),
             attachments: attachments,
-            documents: documents
+            documents: documents,
+            files: filesWithUrls,
+            hasFiles: filesWithUrls.length > 0 ? 'YES' : 'NO'
           };
 
           payloadToDisplay.push(endorsementPayload);
@@ -280,7 +325,7 @@ class TalkpushController {
         //   "Error retrieving data",
         //   error
         // );
-        return error
+        return error;
       });
   }
 
