@@ -216,9 +216,6 @@ class CandidatesController {
               }
             }
 
-            // console.log(list.attachments, list.documents);
-            console.log(filesWithUrls);
-
             if (filesWithUrls.length > 0) {
               for (const file of filesWithUrls) {
                 Object.assign(file, { endo_code: endoCode });
