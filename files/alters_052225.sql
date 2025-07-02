@@ -77,3 +77,7 @@ CREATE TABLE `lendellp_losis_test`.`tbl_endo_external_files` (
   `datetime_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
   `remarks` VARCHAR(150) NULL DEFAULT NULL,
   PRIMARY KEY (`id`));
+
+ALTER TABLE `lendellp_losis_test`.`tbl_endo_external_files` 
+ADD COLUMN `tag` VARCHAR(200) NULL AFTER `name`;
+
