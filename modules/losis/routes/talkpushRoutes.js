@@ -17,6 +17,10 @@ router.get("/candidates-by-status", (req, res) =>
   TalkpushController.getCandidatesByStatus(req, res)
 );
 
+router.get("/candidates-by-status-without-filter", (req, res) =>
+  TalkpushController.getCandidatesByStatusWithoutFilter(req, res)
+);
+
 router.get("/folders", (req, res) => TalkpushController.getFolders(req, res));
 
 module.exports = router;
