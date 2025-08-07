@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const utils = require("./helpers/utils.js");
+const rateLimit = require("express-rate-limit");
 // const redis = require("./helpers/redis.js");
 
 const cookieParser = require("cookie-parser");
@@ -38,13 +39,33 @@ const PORT =
   };
 
   // Middleware
+  const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 60, // limit each IP to 60 requests per minute
+
+    handler: (req, res, next, options) => {
+      const now = new Date().toISOString();
+      const log = `[${now}] ⚠️ Rate limit exceeded from IP: ${req.ip}, URL: ${req.originalUrl}, Method: ${req.method}`;
+      console.warn(log); // Log to console
+      utils.logMessage(`Rate Limit: ${log}`);
+
+      // Optionally log to a file
+      // require('fs').appendFileSync('ratelimit.log', log + '\n');
+
+      res.status(options.statusCode).json({
+        message: "Too many requests, please try again later.",
+      });
+    },
+  });
+
+  app.use(limiter);
   app.use(express.json());
   app.use(morgan("dev"));
 
   app.set("trust proxy", 1);
-  app.use(bodyParser.json({ limit: "60mb" }));
-  app.use(bodyParser.urlencoded({ limit: "60mb", extended: true }));
-  
+  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
   app.use(express.json());
   app.use(cookieParser());
   app.use(cors(corsOptions));
