@@ -42,8 +42,8 @@ const PORT =
   app.use(morgan("dev"));
 
   app.set("trust proxy", 1);
-  app.use(bodyParser.json({ limit: "80mb" }));
-  app.use(bodyParser.urlencoded({ limit: "80mb", extended: true }));
+  app.use(bodyParser.json({ limit: "65mb" }));
+  app.use(bodyParser.urlencoded({ limit: "65mb", extended: true }));
   
   app.use(express.json());
   app.use(cookieParser());
