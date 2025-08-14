@@ -115,6 +115,7 @@ class CandidatesController {
             application_code: applicationCode,
             is_rerun: list.is_rerun,
             external_client_id: list.external_client_id,
+            msa: list.msa
           };
 
           let endorsedToPayload = {

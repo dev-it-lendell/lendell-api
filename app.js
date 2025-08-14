@@ -83,6 +83,7 @@ const PORT =
   // Routes
 
   app.use(require("./modules/baseModuleRoutes.js"));
+  
 
   app.listen(PORT, () => {
     utils.logMessage(`Server running on http://localhost:${PORT}`);

@@ -114,6 +114,7 @@ class TalkpushController {
             active: 0,
             external_client_id: list.id,
             talkpush_status: list.state,
+            msa: list.others.msa,
             folder: list.folder,
           };
 
@@ -268,6 +269,7 @@ class TalkpushController {
             }),
             endo_status: "0",
             endorsed_to: "",
+            msa: list.others.msa,
             turn_around_date: list.completed_at,
             endo_services: "BI",
             endo_requestor: list.others.bi_peme_poc ?? "",
@@ -445,6 +447,7 @@ class TalkpushController {
             account: "",
             package_desc: "Standard",
             is_rerun: "0",
+            msa: list.others.msa,
             active: 0,
             external_client_id: list.id,
             talkpush_status: list.state,

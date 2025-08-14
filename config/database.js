@@ -8,6 +8,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
+    port: process.env.DB_PORT,
     logging: false,
     timezone: "+08:00",
   }
@@ -16,7 +17,7 @@ const sequelize = new Sequelize(
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log("Production Database connected");
+    console.log("Production Database connected ");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
