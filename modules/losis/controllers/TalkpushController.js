@@ -116,6 +116,8 @@ class TalkpushController {
             talkpush_status: list.state,
             msa: list.others.msa,
             folder: list.folder,
+            site: list.campaign_title,
+            package_account_name: list.others.package_account_name
           };
 
           payloadToDisplay.push(endorsementPayload);
@@ -270,6 +272,9 @@ class TalkpushController {
             endo_status: "0",
             endorsed_to: "",
             msa: list.others.msa,
+            folder: list.folder,
+            site: list.campaign_title,
+            package_account_name: list.others.package_account_name,
             turn_around_date: list.completed_at,
             endo_services: "BI",
             endo_requestor: list.others.bi_peme_poc ?? "",
