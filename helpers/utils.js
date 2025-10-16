@@ -797,7 +797,6 @@ const formatAmount = (amount) => {
 const logMessage = (message) => {
   const timestamp = new Date().toISOString();
   logStream.write(`[${timestamp}] ${message}\n`);
-  console.log(message); // Also still log to stdout just in case
 };
 
 module.exports = {

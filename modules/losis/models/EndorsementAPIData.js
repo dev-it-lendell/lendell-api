@@ -7,7 +7,8 @@ class EndorsementAPIData extends Model {
     condition = {},
     customClauses = [],
     orderBy = null,
-    limit = null
+    limit = null,
+    transaction = null
   ) {
     try {
       let query = `SELECT 
@@ -54,6 +55,7 @@ class EndorsementAPIData extends Model {
       const data = await sequelize.query(query, {
         replacements, // Safe parameter binding
         type: sequelize.QueryTypes.SELECT,
+        transaction
       });
 
       return data;

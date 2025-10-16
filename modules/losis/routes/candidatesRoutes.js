@@ -15,6 +15,10 @@ router.get("/status", (req, res) =>
   CandidatesController.selectCandidateStatus(req, res)
 );
 
+router.get("/endorsements", (req, res) =>
+  CandidatesController.selectEndorsements(req, res)
+);
+
 router.post("/endorsement", (req, res) =>
   CandidatesController.insertCandidatesEndorsement(req, res)
 );

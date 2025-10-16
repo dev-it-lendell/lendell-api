@@ -7,7 +7,8 @@ class Endorsement extends Model {
     condition = {},
     customClauses = [],
     orderBy = null,
-    limit = null
+    limit = null,
+    transaction = null
   ) {
     try {
       let query = `SELECT 
@@ -49,11 +50,13 @@ class Endorsement extends Model {
       if (limit) {
         query += `LIMIT ${limit}`;
       }
-
+      
+      // console.log(query)
       // Execute the query
       const data = await sequelize.query(query, {
         replacements, // Safe parameter binding
         type: sequelize.QueryTypes.SELECT,
+        transaction
       });
 
       return data;

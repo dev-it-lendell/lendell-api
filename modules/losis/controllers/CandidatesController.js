@@ -45,6 +45,47 @@ class CandidatesController {
     }
   }
 
+  async selectEndorsements(req, res) {
+    try {
+      const customClauses = [];
+
+      if (!utils.empty(req.query.fromDate) && !utils.empty(req.query.toDate)) {
+        customClauses.push({
+          sql: `external_client_id is not null and date(created_at) between :fromDate and :toDate`,
+          value: {
+            fromDate: req.query.fromDate,
+            toDate: req.query.toDate,
+          },
+        });
+      }
+
+      const endorsments = await Endorsement.select({}, customClauses, "");
+      if (endorsments.length > 0) {
+        for (const list of endorsments) {
+          list.formatted_endo_date = utils.formatDate({
+            date: list.endo_date,
+            dateOnly: true,
+          });
+          list.date_created = utils.formatDate({ date: list.date_created });
+          list.date_updated = utils.formatDate({ date: list.date_updated });
+        }
+      }
+      successResponse(
+        res,
+        HTTP_STATUS.OK,
+        "Endorsement Status fetched successfully",
+        endorsments
+      );
+    } catch (err) {
+      errorResponse(
+        res,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Error fetching candidate status",
+        err.message
+      );
+    }
+  }
+
   async insertCandidatesEndorsement(req, res) {
     const transaction = await sequelize.transaction(); // Start a transaction
     try {

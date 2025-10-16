@@ -8,7 +8,7 @@ class CandidateStatus extends Model {
     customClauses = [],
     orderBy = null,
     limit = null,
-    transaction
+    transaction = null
   ) {
     try {
       let query = `SELECT 

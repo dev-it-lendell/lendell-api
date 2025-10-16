@@ -117,7 +117,7 @@ class TalkpushController {
             msa: list.others.msa,
             folder: list.folder,
             site: list.campaign_title,
-            package_account_name: list.others.package_account_name
+            package_account_name: list.others.package_account_name,
           };
 
           payloadToDisplay.push(endorsementPayload);
@@ -151,7 +151,7 @@ class TalkpushController {
     const transaction = await sequelize.transaction(); // Start a transaction
 
     try {
-      const { status, application_id } = req.query;
+      const { status, application_id, batch_id } = req.query;
 
       const payload = {
         "filter[others][bi_check]": "Lendell",
@@ -167,6 +167,19 @@ class TalkpushController {
       }
 
       if (!utils.empty(status)) {
+        Object.assign(payload, { "filter[status_selected]": status });
+      }
+
+      if (!utils.empty(batch_id)) {
+        Object.assign(payload, {
+          "filter[others][job_requisition_id]": batch_id,
+        });
+      }
+
+      if (!utils.empty(batch_id) && !utils.empty(status)) {
+        Object.assign(payload, {
+          "filter[others][job_requisition_id]": batch_id,
+        });
         Object.assign(payload, { "filter[status_selected]": status });
       }
 
@@ -201,7 +214,6 @@ class TalkpushController {
           const documents = list.documents;
           const attachments = list.attachments;
 
-          
           const filesWithUrls = [];
 
           // console.log(list);
@@ -252,8 +264,6 @@ class TalkpushController {
           delete list.others["gdpr_opt-in"];
           delete list.others.yes;
 
-
-
           let endorsementPayload = {
             full_name: `${list.last_name}, ${list.first_name} ${
               list.others.middle_name ?? ""
@@ -290,7 +300,7 @@ class TalkpushController {
             attachments: attachments,
             documents: documents,
             files: filesWithUrls,
-            hasFiles: filesWithUrls.length > 0 ? 'YES' : 'NO'
+            hasFiles: filesWithUrls.length > 0 ? "YES" : "NO",
           };
 
           payloadToDisplay.push(endorsementPayload);
@@ -310,7 +320,6 @@ class TalkpushController {
       await transaction.rollback();
     }
   }
-
 
   async getCandidatesByStatusWithoutFilter(req, res) {
     // if (utils.empty(req.query)) {
@@ -375,7 +384,6 @@ class TalkpushController {
           const documents = list.documents;
           const attachments = list.attachments;
 
-          
           const filesWithUrls = [];
 
           // console.log(list);
@@ -426,8 +434,6 @@ class TalkpushController {
           delete list.others["gdpr_opt-in"];
           delete list.others.yes;
 
-
-
           let endorsementPayload = {
             full_name: `${list.last_name}, ${list.first_name} ${
               list.others.middle_name ?? ""
@@ -461,7 +467,7 @@ class TalkpushController {
             attachments: attachments,
             documents: documents,
             files: filesWithUrls,
-            hasFiles: filesWithUrls.length > 0 ? 'YES' : 'NO'
+            hasFiles: filesWithUrls.length > 0 ? "YES" : "NO",
           };
 
           payloadToDisplay.push(endorsementPayload);
