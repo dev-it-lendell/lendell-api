@@ -81,3 +81,11 @@ CREATE TABLE `lendellp_losis_test`.`tbl_endo_external_files` (
 ALTER TABLE `lendellp_losis_test`.`tbl_endo_external_files` 
 ADD COLUMN `tag` VARCHAR(200) NULL AFTER `name`;
 
+
+
+ALTER TABLE `lendellp_losis_test`.`tbl_endo` 
+ADD COLUMN `external_status` VARCHAR(100) NULL AFTER `external_client_id`;
+
+
+ALTER TABLE `lendellp_losis_test`.`tbl_endo` 
+ADD COLUMN `external_package_account_name` VARCHAR(150) NULL AFTER `external_status`;

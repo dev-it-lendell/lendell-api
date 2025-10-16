@@ -157,9 +157,9 @@ class CandidatesController {
             is_rerun: list.is_rerun,
             external_client_id: list.external_client_id,
             msa: list.msa,
-            folder: list.folder,
-            site: list.campaign_title,
-            package_account_name: list.package_account_name,
+            external_status: list.folder,
+            site: list.site,
+            external_package_account_name: list.package_account_name,
           };
 
           let endorsedToPayload = {
