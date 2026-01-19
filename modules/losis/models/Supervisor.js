@@ -14,9 +14,9 @@ class Supervisor extends Model {
       let query = `SELECT 
           *
       FROM
-          lendellp_losis_test.tbl_supervisor a
+          lendellp_losis.tbl_supervisor a
               JOIN
-          lendellp_losis_test.supervisor_list b ON b.user_id = a.user_id`; // Raw SQL query
+          lendellp_losis.supervisor_list b ON b.user_id = a.user_id`; // Raw SQL query
 
       const replacements = {};
 

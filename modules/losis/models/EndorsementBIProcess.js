@@ -14,7 +14,7 @@ class EndorsementBIProcess extends Model {
       let query = `SELECT 
           *
       FROM
-          lendellp_losis_test.tbl_endorsement_bi_process`; // Raw SQL query
+          lendellp_losis.tbl_endorsement_bi_process`; // Raw SQL query
 
       const replacements = {};
 
@@ -71,7 +71,7 @@ class EndorsementBIProcess extends Model {
         .map((key) => `:${key}`)
         .join(", ");
 
-      const query = `INSERT INTO lendellp_losis_test.tbl_endorsement_bi_process (${fields}) VALUES (${values})`;
+      const query = `INSERT INTO lendellp_losis.tbl_endorsement_bi_process (${fields}) VALUES (${values})`;
 
       const result = await sequelize.query(query, {
         replacements: data,
@@ -82,7 +82,7 @@ class EndorsementBIProcess extends Model {
       const insertedId = result[0]; // First element contains the inserted primary key (if available)
 
       // If `id` is available, use it; otherwise, use a unique field from `data`
-      const selectQuery = `SELECT * FROM lendellp_losis_test.tbl_endorsement_bi_process WHERE id = :id`;
+      const selectQuery = `SELECT * FROM lendellp_losis.tbl_endorsement_bi_process WHERE id = :id`;
       const [insertedRow] = await sequelize.query(selectQuery, {
         replacements: { id: insertedId },
         type: sequelize.QueryTypes.SELECT,
@@ -113,7 +113,7 @@ class EndorsementBIProcess extends Model {
         .map((key) => `${key} = :${key}`)
         .join(" AND ");
 
-      const query = `UPDATE lendellp_losis_test.tbl_endorsement_bi_process SET ${setClause} WHERE ${whereClause}`;
+      const query = `UPDATE lendellp_losis.tbl_endorsement_bi_process SET ${setClause} WHERE ${whereClause}`;
 
       const result = await sequelize.query(query, {
         replacements: { ...data, ...condition },
@@ -121,7 +121,7 @@ class EndorsementBIProcess extends Model {
         transaction,
       });
 
-      const selectQuery = `SELECT * FROM lendellp_losis_test.tbl_endorsement_bi_process WHERE ${whereClause}`;
+      const selectQuery = `SELECT * FROM lendellp_losis.tbl_endorsement_bi_process WHERE ${whereClause}`;
       const [updatedRows] = await sequelize.query(selectQuery, {
         replacements: { ...condition },
         type: sequelize.QueryTypes.SELECT,
