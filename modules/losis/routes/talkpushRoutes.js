@@ -17,6 +17,10 @@ router.get("/candidates-by-status", (req, res) =>
   TalkpushController.getCandidatesByStatus(req, res)
 );
 
+router.get("/candidates-paginate", (req, res) =>
+  TalkpushController.getCandidatesByStatusPaginate(req, res)
+);
+
 router.get("/candidates-by-status-without-filter", (req, res) =>
   TalkpushController.getCandidatesByStatusWithoutFilter(req, res)
 );

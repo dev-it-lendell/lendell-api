@@ -60,7 +60,7 @@ class TalkpushController {
         {},
         "",
         "",
-        transaction
+        transaction,
       );
 
       const allCandidates = [];
@@ -130,7 +130,7 @@ class TalkpushController {
         HTTP_STATUS.OK,
         "Talkpush Candidate Data",
         payloadToDisplay,
-        true
+        true,
       );
     } catch (err) {
       console.log(err);
@@ -313,7 +313,213 @@ class TalkpushController {
         HTTP_STATUS.OK,
         "Talkpush Candidate Data",
         payloadToDisplay,
-        true
+        true,
+      );
+    } catch (err) {
+      console.log(err);
+      await transaction.rollback();
+    }
+  }
+
+  async getCandidatesByStatusPaginate(req, res) {
+    // if (utils.empty(req.query)) {
+    //   return errorResponse(
+    //     res,
+    //     HTTP_STATUS.BAD_REQUEST,
+    //     "Missing Parameter(s)",
+    //     {}
+    //   );
+    // }
+
+    const transaction = await sequelize.transaction(); // Start a transaction
+
+    try {
+      const { status, application_id, batch_id, page } = req.query;
+
+      const payload = {
+        "filter[others][bi_check]": "Lendell",
+        include_documents: true,
+        include_attachments: true,
+        // "filter[others][msa]": "24091 - Block Inc - 980005835",
+        // "filter[others][job_requisition_primary_location]":
+        //   "PHL Quezon City - Giga Tower, 10th, 11th, 19th Flr",
+      };
+
+      if (!utils.empty(application_id)) {
+        Object.assign(payload, { "filter[query]": `AP${application_id}` });
+      }
+
+      if (!utils.empty(status)) {
+        Object.assign(payload, { "filter[status_selected]": status });
+      }
+
+      if (!utils.empty(batch_id)) {
+        Object.assign(payload, {
+          "filter[others][job_requisition_id]": batch_id,
+        });
+      }
+
+      if (!utils.empty(batch_id) && !utils.empty(status)) {
+        Object.assign(payload, {
+          "filter[others][job_requisition_id]": batch_id,
+        });
+        Object.assign(payload, { "filter[status_selected]": status });
+      }
+
+      if (!utils.empty(page)) {
+        Object.assign(payload, { "page": page });
+      }
+
+      const allCandidates = [];
+
+      let candidatesByStatus = await this.getCandidatesFromTalkPush(payload);
+
+
+      // if (candidatesByStatus.total > 0) {
+      //   allCandidates.push(...candidatesByStatus.candidates);
+      //   const totalPages = candidatesByStatus.pages;
+
+      //   // Only loop if there are more than 1 page
+      //   for (let page = 2; page <= totalPages; page++) {
+      //     Object.assign(payload, { page: page });
+      //     const nextPagesData = await this.getCandidatesFromTalkPush(payload);
+      //     // const data = await res.json();
+      //     allCandidates.push(...nextPagesData.candidates);
+      //   }
+      // }
+
+      // allCandidates.push(...candidatesByStatus)
+
+      let payloadToDisplay = [];
+
+      if (Object.keys(candidatesByStatus).length === 0) {
+        return;
+      }
+
+      if (candidatesByStatus.candidates.length > 0) {
+        for (const list of candidatesByStatus.candidates) {
+
+          // if (endorsement.length > 0) {
+          //   continue;
+          // }
+
+          const documents = list.documents;
+          const attachments = list.attachments;
+
+          const filesWithUrls = [];
+
+          // console.log(list);
+          // Attachment and Documents //
+
+          if (list.documents.length > 0) {
+            if (Array.isArray(list.documents)) {
+              list.documents.forEach((doc) => {
+                if (Array.isArray(doc.files)) {
+                  doc.files.forEach((file) => {
+                    if (file.url && file.name) {
+                      const fileType = file.name.slice(-3).toLowerCase();
+                      filesWithUrls.push({
+                        tag: doc.tag,
+                        name: file.name,
+                        type: "document",
+                        content_url: file.url,
+                        content_type: fileType,
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          }
+
+          // Extract from attachments (if any)
+          if (list.attachments.length > 0) {
+            if (Array.isArray(list.attachments)) {
+              list.attachments.forEach((att) => {
+                if (att.url && att.name) {
+                  const fileType = att.name.slice(-3).toLowerCase();
+                  filesWithUrls.push({
+                    tag: att.tag || "Attachment",
+                    name: att.name,
+                    type: "attachment",
+                    content_url: att.url,
+                    content_type: fileType,
+                  });
+                }
+              });
+            }
+          }
+
+          delete list.documents;
+          delete list.attachments;
+          delete list.photo;
+          delete list.others["gdpr_opt-in"];
+          delete list.others.yes;
+
+
+          const endorsement = await Endorsement.select({
+            external_client_id: list.id,
+          });
+
+
+          let endorsementPayload = {
+            pagesInfo: {
+              total: candidatesByStatus.total,
+              currentPage: candidatesByStatus.current_page,
+              pages: candidatesByStatus.pages,
+            },
+            full_name: `${list.last_name}, ${list.first_name} ${
+              list.others.middle_name ?? ""
+            }`,
+            fname: list.first_name,
+            mname: list.others.middle_name ?? "",
+            lname: list.last_name,
+            suffix: "-",
+            birthdate: list.others.date_of_birth ?? null,
+            endo_desc: list.others.job_requisition_id,
+            endo_date: list.created_at,
+            endo_formatdate: utils.formatDate({
+              date: list.created_at,
+              withDayName: true,
+            }),
+            endo_status: "0",
+            endorsed_to: "",
+            msa: list.others.msa,
+            folder: list.folder,
+            site: list.campaign_title,
+            package_account_name: list.others.package_account_name,
+            turn_around_date: list.completed_at,
+            endo_services: "BI",
+            endo_requestor: list.others.bi_peme_poc ?? "",
+            importance: "1",
+            account: "",
+            package_desc: "Standard",
+            is_rerun: "0",
+            active: 0,
+            external_client_id: list.id,
+            talkpush_status: list.state,
+            folder: list.folder,
+            rawData: JSON.stringify(list),
+            attachments: attachments,
+            documents: documents,
+            files: filesWithUrls,
+            hasFiles: filesWithUrls.length > 0 ? "YES" : "NO",
+            isPresentInLendellDB: endorsement.length > 0 ? true : false
+          };
+
+          payloadToDisplay.push(endorsementPayload);
+        }
+      }
+
+      console.log(payloadToDisplay.filter((filterLendell) => filterLendell.isPresentInLendellDB).length)
+
+      await transaction.commit();
+      successResponse(
+        res,
+        HTTP_STATUS.OK,
+        "Talkpush Candidate Data",
+        payloadToDisplay,
+        true,
       );
     } catch (err) {
       console.log(err);
@@ -480,7 +686,7 @@ class TalkpushController {
         HTTP_STATUS.OK,
         "Talkpush Candidate Data",
         payloadToDisplay,
-        true
+        true,
       );
     } catch (err) {
       console.log(err);
@@ -491,11 +697,11 @@ class TalkpushController {
   async getCandidatesFromTalkPush(payload) {
     const queryStr = utils.queryToStr(payload, true);
     console.log(
-      `${process.env.TALKPUSH_CONCENTRIX_API_URL}campaign_invitations?api_key=${process.env.TALKPUSH_API_KEY}&${queryStr}`
+      `${process.env.TALKPUSH_CONCENTRIX_API_URL}campaign_invitations?api_key=${process.env.TALKPUSH_API_KEY}&${queryStr}`,
     );
     return await fetch(
       `${process.env.TALKPUSH_CONCENTRIX_API_URL}campaign_invitations?api_key=${process.env.TALKPUSH_API_KEY}&${queryStr}`,
-      requestOptions
+      requestOptions,
     )
       .then((response) => response.text())
       .then((result) => {
@@ -516,7 +722,7 @@ class TalkpushController {
   async getFolders(req, res) {
     await fetch(
       `${process.env.TALKPUSH_CONCENTRIX_API_URL}company/folders?api_key=${process.env.TALKPUSH_API_KEY}`,
-      requestOptions
+      requestOptions,
     )
       .then((response) => response.text())
       .then((result) => {
@@ -525,7 +731,7 @@ class TalkpushController {
           HTTP_STATUS.OK,
           "Talkpush Folder Data",
           JSON.parse(result),
-          true
+          true,
         );
       })
       .catch((error) => {
@@ -534,7 +740,7 @@ class TalkpushController {
           res,
           HTTP_STATUS.INTERNAL_SERVER_ERROR,
           "Error retrieving data",
-          error
+          error,
         );
       });
   }
