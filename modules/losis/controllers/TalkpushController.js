@@ -334,7 +334,7 @@ class TalkpushController {
     const transaction = await sequelize.transaction(); // Start a transaction
 
     try {
-      const { status, application_id, batch_id, page } = req.query;
+      const { status, application_id, batch_id, page, query } = req.query;
 
       const payload = {
         "filter[others][bi_check]": "Lendell",
@@ -367,13 +367,16 @@ class TalkpushController {
       }
 
       if (!utils.empty(page)) {
-        Object.assign(payload, { "page": page });
+        Object.assign(payload, { page: page });
+      }
+
+      if (!utils.empty(query)) {
+        Object.assign(payload, { "filter[query]": query });
       }
 
       const allCandidates = [];
 
       let candidatesByStatus = await this.getCandidatesFromTalkPush(payload);
-
 
       // if (candidatesByStatus.total > 0) {
       //   allCandidates.push(...candidatesByStatus.candidates);
@@ -398,7 +401,6 @@ class TalkpushController {
 
       if (candidatesByStatus.candidates.length > 0) {
         for (const list of candidatesByStatus.candidates) {
-
           // if (endorsement.length > 0) {
           //   continue;
           // }
@@ -456,11 +458,9 @@ class TalkpushController {
           delete list.others["gdpr_opt-in"];
           delete list.others.yes;
 
-
           const endorsement = await Endorsement.select({
             external_client_id: list.id,
           });
-
 
           let endorsementPayload = {
             pagesInfo: {
@@ -504,14 +504,19 @@ class TalkpushController {
             documents: documents,
             files: filesWithUrls,
             hasFiles: filesWithUrls.length > 0 ? "YES" : "NO",
-            isPresentInLendellDB: endorsement.length > 0 ? true : false
+            isPresentInLendellDB: endorsement.length > 0 ? true : false,
+            isPresentInLendellDBLabel: endorsement.length > 0 ? "YES" : "NO",
           };
 
           payloadToDisplay.push(endorsementPayload);
         }
       }
 
-      console.log(payloadToDisplay.filter((filterLendell) => filterLendell.isPresentInLendellDB).length)
+      console.log(
+        payloadToDisplay.filter(
+          (filterLendell) => filterLendell.isPresentInLendellDB,
+        ).length,
+      );
 
       await transaction.commit();
       successResponse(
