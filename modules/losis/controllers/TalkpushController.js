@@ -117,7 +117,7 @@ class TalkpushController {
             msa: list.others.msa,
             folder: list.folder,
             site: list.campaign_title,
-            package_account_name: list.others.package_account_name,
+            package_account_name: list.others.package_account_name ?? "",
           };
 
           payloadToDisplay.push(endorsementPayload);
@@ -284,7 +284,7 @@ class TalkpushController {
             msa: list.others.msa,
             folder: list.folder,
             site: list.campaign_title,
-            package_account_name: list.others.package_account_name,
+            package_account_name: list.others.package_account_name ?? "",
             turn_around_date: list.completed_at,
             endo_services: "BI",
             endo_requestor: list.others.bi_peme_poc ?? "",
@@ -487,7 +487,7 @@ class TalkpushController {
             msa: list.others.msa,
             folder: list.folder,
             site: list.campaign_title,
-            package_account_name: list.others.package_account_name,
+            package_account_name: list.others.package_account_name ?? "",
             turn_around_date: list.completed_at,
             endo_services: "BI",
             endo_requestor: list.others.bi_peme_poc ?? "",
@@ -512,11 +512,11 @@ class TalkpushController {
         }
       }
 
-      console.log(
-        payloadToDisplay.filter(
-          (filterLendell) => filterLendell.isPresentInLendellDB,
-        ).length,
-      );
+      // console.log(
+      //   payloadToDisplay.filter(
+      //     (filterLendell) => filterLendell.isPresentInLendellDB,
+      //   ).length,
+      // );
 
       await transaction.commit();
       successResponse(
